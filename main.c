@@ -1,21 +1,35 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+void GerarNomeArquivo(int numArq, char * nomeArquivo)
+{
+    nomeArquivo[0] = '\0';
+    char charNumArq[10];
+    itoa(numArq, charNumArq, 10);
+    strcat(nomeArquivo,"./trabalho4/rev");
+    strcat(nomeArquivo,charNumArq);
+    strcat(nomeArquivo,".bin");
+}
 
 int main()
 {
+    int qntArq = 0;
     FILE *arquivo;
-    arquivo = fopen("./trabalho4/rev1.bin", "rb");
-    char linha[255];
+
+    do
+    {
+    qntArq++;
+    char nomeArquivo[100];
+    GerarNomeArquivo(qntArq, nomeArquivo);
+    printf("%s\n",nomeArquivo);
+    arquivo = fopen(nomeArquivo, "rb");
     if(arquivo == NULL)
-    {
-        printf("Erro ao ler o arquivo!\n");
-        exit(-1);
-    }
-
-    while(fgets(linha, sizeof(linha), arquivo) != NULL) 
-    {
-        printf("%s", linha);
-    }
-
+        {
+            printf(" INFO - Foram lidos %d arquvios", qntArq - 1);
+            break;
+        }
+    free(nomeArquivo);
+    }while (1 || qntArq >100);
     return 0;
 }
