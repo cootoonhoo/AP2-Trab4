@@ -9,7 +9,7 @@ int tamString(char * str)
     return 1 + tamString((str+1));
 }
 
-void GerarNomeArquivo(int numArq, char * nomeArquivo)
+void GerarNomeArquivoLeitura(int numArq, char * nomeArquivo)
 {
     nomeArquivo[0] = '\0';
     char charNumArq[10];
@@ -17,6 +17,16 @@ void GerarNomeArquivo(int numArq, char * nomeArquivo)
     strcat(nomeArquivo,"./trabalho4/rev");
     strcat(nomeArquivo,charNumArq);
     strcat(nomeArquivo,".bin");
+}
+
+void GerarNomeArquivoImpressao(int numArq, char * nomeArquivo)
+{
+    nomeArquivo[0] = '\0';
+    char charNumArq[10];
+    itoa(numArq, charNumArq, 10);
+    strcat(nomeArquivo,"./trabalho4texto/rev");
+    strcat(nomeArquivo,charNumArq);
+    strcat(nomeArquivo,".txt");
 }
 
 int LeturaArquivo(FILE * arquivo, char * maiorPalavra, char * menorPalavra)
@@ -76,9 +86,9 @@ int LeturaArquivo(FILE * arquivo, char * maiorPalavra, char * menorPalavra)
 int QuantidadeParagrafosArquivo(FILE * arquivo)
 {
     char caractere = 0, caractereAnterior = 0;
-    int qntParagrafos = 0, primeiraIteracao = 1;
+    int qntParagrafos = 0;
     while ((caractere = fgetc(arquivo)) != EOF)
-    {      
+    {
         if(caractere == '\t'  && caractereAnterior == '\n')
             qntParagrafos++;
         caractereAnterior = caractere;
@@ -86,6 +96,32 @@ int QuantidadeParagrafosArquivo(FILE * arquivo)
     if(caractere == EOF)
         qntParagrafos++;
     return qntParagrafos;
+}
+
+void ReescreverArquivoTxt(FILE * arquivo, int numArquivo)
+{
+    char NomeNovoArquivo[100], caractere = 0, caractereAnterior = 0;
+    FILE * novoArquivo;
+    GerarNomeArquivoImpressao(numArquivo, NomeNovoArquivo);
+    novoArquivo = fopen(NomeNovoArquivo, "w");
+    if(novoArquivo == NULL)
+    {
+        printf("Foi impossivel reescrever o novo arquivo!\n");
+        exit(EXIT_FAILURE);
+    }
+    while ((caractere = fgetc(arquivo)) != EOF)
+    {
+        // printf("C = %c %d\n", caractere, caractere);
+        // printf("CA = %c %d\n", caractereAnterior, caractereAnterior);
+        // system("pause");
+        if(caractere == '\n')
+        {
+            continue;
+        }
+        caractereAnterior = caractere;
+        fputc(caractere, novoArquivo);
+    }
+    fclose(novoArquivo);
 }
 
 int main()
@@ -98,7 +134,7 @@ int main()
     {
         qntArq++;
         char nomeArquivo[100], MaiorPalavraLocal[255], MenorPalavraLocal[255];
-        GerarNomeArquivo(qntArq, nomeArquivo);
+        GerarNomeArquivoLeitura(qntArq, nomeArquivo);
         arquivo = fopen(nomeArquivo, "rb");
         if(arquivo == NULL)
         {
@@ -108,6 +144,9 @@ int main()
         qntPalavras += LeturaArquivo(arquivo, MaiorPalavraLocal, MenorPalavraLocal);
         fseek(arquivo, 0 ,SEEK_SET);
         qntParagrafos += QuantidadeParagrafosArquivo(arquivo);
+        fseek(arquivo, 0 ,SEEK_SET);
+        ReescreverArquivoTxt(arquivo,qntArq);
+
         printf("INFO - Maior palavra do arquivo %d: %s\n", qntArq, MaiorPalavraLocal);
         printf("INFO - Menor palavra do arquivo %d: %s\n\n", qntArq, MenorPalavraLocal);
 
@@ -124,18 +163,19 @@ int main()
         }
         fclose(arquivo);
     } while (1 && qntArq < MAXARQUIVOS);
+
     if(qntArq > MAXARQUIVOS)
     {
         printf("Voce ultrapassou o max de arquivos a serem lidos!\n");
-        exit(EXIT_FAILURE);    
+        exit(EXIT_FAILURE);
     }
 
+    //Debug visual do arquivo Out
     printf("\nDados arquivo out \n\n");
     printf("Media do numero de palavras por review: %.2f\n", qntPalavras/(float)qntArq);
     printf("Media de paragrafos por review: %.2f\n", qntParagrafos/(float)qntArq);
     printf("Maior palavra: %s\n", MaiorPalavraGlobal);
     printf("Menor palavra: %s\n", MenorPalavraGlobal);
-
 
     arquivoOut = fopen("relatorio.out", "wb");
     if(arquivoOut == NULL)
@@ -143,6 +183,8 @@ int main()
         printf("Nao foi possivel criar o arquivo relatorio.out!\n");
         exit(EXIT_FAILURE);
     }
+
+    //Escrevendo o arquivo Out
     fprintf(arquivoOut, "Media do numero de palavras por review: %.2f\n", qntPalavras/(float)qntArq);
     fprintf(arquivoOut, "Media de paragrafos por review: %.2f\n", qntParagrafos/(float)qntArq);
     fprintf(arquivoOut,"Maior palavra: %s\n", MaiorPalavraGlobal);
