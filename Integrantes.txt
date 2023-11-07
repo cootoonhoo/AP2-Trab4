@@ -1,0 +1,6 @@
+Alunos
+--------------
+    12221BSI242 - Guilherme França Soares 
+    12221BSI240 - Marco Antonio Batista de Souza
+    12221BSI236 - Rafael Romancini
+-------------

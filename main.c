@@ -126,9 +126,20 @@ void ReescreverArquivoTxt(FILE * arquivo, int numArquivo)
 
 int main()
 {
-    int qntArq = 0, qntPalavras = 0 ,qntParagrafos = 0, tamMaiorPalavra = 0, tamMenorPalavra = 255;
+    int qntArq = 0, qntPalavras = 0 ,qntParagrafos = 0, tamMaiorPalavra = 0, tamMenorPalavra = 255, check = 0;
     FILE *arquivo, *arquivoOut;
     char MenorPalavraGlobal[255], MaiorPalavraGlobal[255];
+
+    check = mkdir("trabalho4texto");
+    if(check)
+    {
+        printf("Nao foi possivel criar o diretorio trabalho4texto! Verifique se o diretorio ja existe.\n\n");
+
+    }
+    else
+    {
+        printf("Diretorio trabalho4texto criado com sucesso!\n\n");
+    }
 
     do
     {
